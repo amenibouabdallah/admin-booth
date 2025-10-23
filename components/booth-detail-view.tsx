@@ -56,6 +56,9 @@ interface Category {
   id: string
   name: string
   description: string
+  dimensions: Dimensions
+  priceWitouAddons: number
+  addons: Addon[]
 }
 
 export function BoothDetailView({ boothId, onBack }: BoothDetailViewProps) {
@@ -165,6 +168,31 @@ export function BoothDetailView({ boothId, onBack }: BoothDetailViewProps) {
   const handleCancel = () => {
     setFormData(booth)
     setIsEditing(false)
+  }
+
+  const handleCategoryChange = (categoryId: string) => {
+    if (!formData) return
+
+    if (!categoryId) {
+      // If no category is selected, just update categoryId
+      setFormData({ ...formData, categoryId: undefined })
+      return
+    }
+
+    // Find the selected category
+    const selectedCategory = categories.find((cat) => cat.id === categoryId)
+    if (!selectedCategory) return
+
+    // Update booth with category's dimensions, price, and addons
+    const addonsPrice = selectedCategory.addons.reduce((sum, addon) => sum + addon.price, 0)
+    setFormData({
+      ...formData,
+      categoryId: categoryId,
+      dimensions: { ...selectedCategory.dimensions },
+      priceWitouAddons: selectedCategory.priceWitouAddons,
+      finalPrice: selectedCategory.priceWitouAddons + addonsPrice,
+      addons: selectedCategory.addons.map((addon) => ({ ...addon })),
+    })
   }
 
   const handleAddAddon = () => {
@@ -426,7 +454,7 @@ export function BoothDetailView({ boothId, onBack }: BoothDetailViewProps) {
                 {isEditing ? (
                   <select
                     value={formData.categoryId || ""}
-                    onChange={(e) => setFormData({ ...formData, categoryId: e.target.value || undefined })}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
                     className="w-full px-3 py-2 border border-input rounded-md bg-background"
                   >
                     <option value="">No Category</option>

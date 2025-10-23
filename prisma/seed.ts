@@ -68,69 +68,30 @@ async function main() {
     }
   }
 
+  // Remove all existing booths
+  console.log("Removing existing booths...");
+  const deletedBooths = await prisma.booth.deleteMany({});
+  console.log(`Deleted ${deletedBooths.count} existing booths`);
+
   // Create 55 booths
   console.log("Creating 55 booths...");
-  const boothNames = [
-    "Innovation Hub", "Tech Central", "Future Zone", "Digital Plaza", "Smart Space",
-    "Creative Corner", "Business Bay", "Enterprise Center", "Startup Station", "Growth Gallery",
-    "Success Spot", "Visionary Venue", "Pioneer Place", "Leader's Lodge", "Expert Exchange",
-    "Professional Point", "Executive Edge", "Premier Position", "Elite Exhibit", "Superior Stand",
-    "Excellence Area", "Quality Quarter", "Premium Pavilion", "Prestige Plaza", "Luxury Lane",
-    "Grand Gallery", "Royal Row", "Imperial Isle", "Noble Nook", "Regal Room",
-    "Majestic Market", "Sovereign Space", "Crown Corner", "Dynasty Display", "Monarch Mart",
-    "Summit Station", "Apex Arena", "Peak Pavilion", "Pinnacle Place", "Zenith Zone",
-    "Catalyst Corner", "Momentum Market", "Velocity Venue", "Accelerate Area", "Progress Point",
-    "Transform Tower", "Evolve Exhibit", "Advance Arena", "Breakthrough Bay", "Frontier Forum",
-    "Horizon Hall", "Discovery Den", "Explorer's Edge", "Venture Vista", "Quest Quarter",
-  ];
-
-  const boothDescriptions = [
-    "Showcase your latest innovations and technologies",
-    "Connect with industry leaders and partners",
-    "Present cutting-edge solutions to visitors",
-    "Display your products and services",
-    "Network with potential customers",
-  ];
+  const defaultDimensions = { width: 3, height: 3 };
+  const defaultPrice = 1000;
 
   for (let i = 1; i <= 55; i++) {
-    const existing = await prisma.booth.findUnique({
-      where: { number: i },
+    const booth = await prisma.booth.create({
+      data: {
+        name: `Booth ${i}`,
+        description: `Exhibition booth number ${i}`,
+        number: i,
+        dimensions: defaultDimensions,
+        priceWitouAddons: defaultPrice,
+        finalPrice: defaultPrice,
+        status: "Pending",
+        addons: [],
+      },
     });
-
-    if (!existing) {
-      // Assign categories in a rotating pattern
-      const categoryIndex = i % createdCategories.length;
-      const category = createdCategories[categoryIndex];
-
-      // Vary booth sizes
-      const sizeVariation = Math.random() * 0.5;
-      const width = category.dimensions.width + sizeVariation;
-      const height = category.dimensions.height + sizeVariation;
-
-      // Add some price variation
-      const priceVariation = Math.random() * 500;
-      const basePrice = category.priceWitouAddons + priceVariation;
-
-      const booth = await prisma.booth.create({
-        data: {
-          name: boothNames[i - 1],
-          description: boothDescriptions[Math.floor(Math.random() * boothDescriptions.length)],
-          number: i,
-          dimensions: {
-            width: parseFloat(width.toFixed(1)),
-            height: parseFloat(height.toFixed(1)),
-          },
-          priceWitouAddons: parseFloat(basePrice.toFixed(2)),
-          finalPrice: parseFloat(basePrice.toFixed(2)),
-          status: "Pending",
-          categoryId: category.id,
-          addons: [],
-        },
-      });
-      console.log(`Created booth #${booth.number}: ${booth.name}`);
-    } else {
-      console.log(`Booth #${i} already exists`);
-    }
+    console.log(`Created booth #${booth.number}: ${booth.name}`);
   }
 
   console.log("Seed completed successfully!");
