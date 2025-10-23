@@ -9,8 +9,8 @@ const montserrat = Montserrat({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "v0 App",
-  description: "Created with v0",
+  title: "Admin Jet'xpo dashboard",
+  description: "Dashboard for booth organizers to manage their Jet'xpo booths.",
   generator: "v0.app",
 }
 
