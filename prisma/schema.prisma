@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model admin_dashboard {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  @@map("admin-dashboard")
+}
+
+model Enterprise {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  companyName String
+  email       String   @unique
+  booths      Booth[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("enterprises")
+}
+
+model Booth {
+  id                    String      @id @default(auto()) @map("_id") @db.ObjectId
+  name                  String
+  description           String
+  number                Int         @unique
+  dimensions            Dimensions
+  priceWitouAddons      Float
+  finalPrice            Float
+  status                BoothStatus @default(Pending)
+  enterpriseId          String?     @db.ObjectId
+  categoryId            String?     @db.ObjectId
+  reservationAcceptedAt DateTime?
+  addons                Addon[]
+  image                 String?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  enterprise            Enterprise? @relation(fields: [enterpriseId], references: [id])
+  category              Category?   @relation(fields: [categoryId], references: [id])
+
+  @@map("booths")
+}
+
+model Category {
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  name             String     @unique
+  description      String
+  dimensions       Dimensions
+  priceWitouAddons Float
+  addons           Addon[]
+  image            String?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  booths           Booth[]
+
+  @@map("categories")
+}
+
+type Dimensions {
+  width  Float
+  height Float
+}
+
+type Addon {
+  name        String
+  description String?
+  price       Float
+}
+
+enum BoothStatus {
+  Pending
+  Accepted
+  Rejected
+}

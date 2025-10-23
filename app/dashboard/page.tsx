@@ -1,19 +1,18 @@
 "use client"
 
-import { useEffect } from "react"
+import { Download, FolderKanban, LogOut } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { BoothListView } from "@/components/booth-list-view"
-import { BoothDetailView } from "@/components/booth-detail-view"
+import { useEffect, useState } from "react"
 import { BookingRequestsView } from "@/components/booking-requests-view"
+import { BoothDetailView } from "@/components/booth-detail-view"
+import { BoothListView } from "@/components/booth-list-view"
 import { Button } from "@/components/ui/button"
-import { LogOut, Download } from "lucide-react"
 
 export default function AdminDashboard() {
   const router = useRouter()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [currentView, setCurrentView] = useState<"list" | "detail" | "bookings">("list")
-  const [selectedBoothId, setSelectedBoothId] = useState<number | null>(null)
+  const [selectedBoothId, setSelectedBoothId] = useState<string | null>(null)
 
   useEffect(() => {
     // Check if user is authenticated
@@ -25,12 +24,12 @@ export default function AdminDashboard() {
     }
   }, [router])
 
-  const handleSelectBooth = (boothId: number) => {
+  const handleSelectBooth = (boothId: string) => {
     setSelectedBoothId(boothId)
     setCurrentView("detail")
   }
 
-  const handleViewBookings = (boothId: number) => {
+  const handleViewBookings = (boothId: string) => {
     setSelectedBoothId(boothId)
     setCurrentView("bookings")
   }
@@ -99,6 +98,10 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between p-4 max-w-7xl mx-auto">
           <h1 className="text-2xl font-bold">JETConnect Booth Management Admin Dashboard</h1>
           <div className="flex gap-2">
+            <Button variant="outline" onClick={() => router.push("/categories")} size="sm">
+              <FolderKanban className="h-4 w-4 mr-2" />
+              Categories
+            </Button>
             <Button variant="outline" onClick={exportBoothsCSV} size="sm">
               <Download className="h-4 w-4 mr-2" />
               Export CSV

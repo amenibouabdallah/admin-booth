@@ -1,15 +1,15 @@
 "use client"
 
+import { ArrowLeft, Check, Eye, X } from "lucide-react"
 import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Check, X, Eye } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { mockBooths } from "@/lib/mock-data"
 import { EnterpriseDetailsModal } from "./enterprise-details-modal"
 
 interface BookingRequestsViewProps {
-  boothId: number
+  boothId: string
   onBack: () => void
 }
 
